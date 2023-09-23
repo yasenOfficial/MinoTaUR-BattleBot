@@ -1,11 +1,11 @@
-# MinoTaUR-BattleBot
+MinoTaUR-BattleBot
 
 https://github.com/yasenOfficial/MinoTaUR-BattleBot/assets/91755243/25c4f9e3-ce4f-48a4-85e9-de5f3a939d76
 
-# Introduction
+Introduction
 This battle-ready machine is constructed from durable stainless steel, powered by repurposed hoverboard motors, and controlled by an Arduino-based system and a 2.4 GHz receiver . It has proven its worth on the BattleBots arena and is ready for more action.
 
-# Features
+Features
 Stainless Steel Build: The BattleBot is constructed from high-quality stainless steel, providing exceptional durability, resistance to damage during combat and making it 25 kilograms.
 
 Hoverboard Motors: The bot is driven by motors salvaged from a disassembled hoverboard, delivering powerful and agile movement on the battlefield.

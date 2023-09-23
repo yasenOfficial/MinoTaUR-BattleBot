@@ -1,6 +1,6 @@
 # MinoTaUR-BattleBot
 
-![alt text](https://github.com/yasenOfficial/MinoTaUR-BattleBot]/blob/main/battlebot.png?raw=true)
+![alt text](https://github.com/yasenOfficial/MinoTaUR-BattleBot/blob/main/battlebot.png)?raw=true)
 
 # Introduction
 This battle-ready machine is constructed from durable stainless steel, powered by repurposed hoverboard motors, and controlled by an Arduino-based system and a 2.4 GHz receiver . It has proven its worth on the BattleBots arena and is ready for more action.

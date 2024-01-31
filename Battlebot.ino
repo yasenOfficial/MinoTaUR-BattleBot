@@ -6,14 +6,10 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
-#define direction_pin_1 9
-#define stop_pin_1 10
+#define direction_pin 6
+#define stop_pin 5
 
-#define direction_pin_2 3
-#define stop_pin_2 4
-
-#define controller_1 6
-#define controller_2 5
+#define rellayPin 2
 
 RF24 radio(7, 8); // CE, CSN
 
@@ -22,14 +18,9 @@ Adafruit_MPU6050 mpu;
 const byte address[6] = "00001";
 
 void setup() {
-  pinMode(direction_pin_1, OUTPUT);
-  pinMode(stop_pin_1, OUTPUT);
-
-  pinMode(direction_pin_2, OUTPUT);
-  pinMode(stop_pin_2, OUTPUT);
-
-  pinMode(controller_1, OUTPUT);
-  pinMode(controller_2, OUTPUT);
+  pinMode(direction_pin, OUTPUT);
+  pinMode(stop_pin, OUTPUT);
+  pinMode(rellayPin, OUTPUT);
 
   Serial.begin(9600);
 
@@ -69,125 +60,24 @@ struct {
 }dataToSend;
 
 void loop() {
+  digitalWrite(rellayPin, HIGH);
   if (radio.available()) {
     radio.read(&receivedData, sizeof(receivedData));
     // Map the joystick X value from the range 0-1023 to the range 0-255
-    Serial.println(receivedData.joyX);
-    if(receivedData.joyX > 600){
-      int mappedJoyX = map(receivedData.joyX, 506, 1023, 0, 255);
-      int mappedJoyY;
-      if(receivedData.joyY > 600){
-        mappedJoyY = map(receivedData.joyY, 506, 1023, 0, 255);
-      }else if(receivedData.joyY < 400){
-        mappedJoyY = map(receivedData.joyY, 506, 0, 0, 255);
-      }
-      if(receivedData.joyY < 400 && mappedJoyY/2 < mappedJoyX){
-        digitalWrite(direction_pin_1, LOW);
-        digitalWrite(direction_pin_2, LOW);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyX - mappedJoyY/2);
-        analogWrite(controller_2, mappedJoyX + mappedJoyY/2);
-      }else if(receivedData.joyY < 400 && mappedJoyY/2 > mappedJoyX){
-        digitalWrite(direction_pin_1, HIGH);
-        digitalWrite(direction_pin_2, LOW);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, abs(mappedJoyX - mappedJoyY/2));
-        analogWrite(controller_2, mappedJoyX + mappedJoyY/2);
-      }else if(receivedData.joyY > 600 && mappedJoyY/2 < mappedJoyX){
-        digitalWrite(direction_pin_1, LOW);
-        digitalWrite(direction_pin_2, LOW);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyX + mappedJoyY/2);
-        analogWrite(controller_2, mappedJoyX - mappedJoyY/2);
-      }else if(receivedData.joyY > 600 && mappedJoyY/2 > mappedJoyX){
-        digitalWrite(direction_pin_1, LOW);
-        digitalWrite(direction_pin_2, HIGH);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyX + mappedJoyY/2);
-        analogWrite(controller_2, abs(mappedJoyX - mappedJoyY/2));
-      }else{   
-        digitalWrite(direction_pin_1, LOW);
-        digitalWrite(direction_pin_2, LOW);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyX);
-        analogWrite(controller_2, mappedJoyX);
-      }
-
-      //Serial.println("Greater than 508");
-    }else if(receivedData.joyX < 400){
-      int mappedJoyX = map(receivedData.joyX, 506, 0, 0, 255);
-      int mappedJoyY;
-      if(receivedData.joyY > 600){
-        mappedJoyY = map(receivedData.joyY, 506, 1023, 0, 255);
-      }else if(receivedData.joyY < 400){
-        mappedJoyY = map(receivedData.joyY, 506, 0, 0, 255);
-      }
-      Serial.println(receivedData.joyY);
-      if(receivedData.joyY < 400 && mappedJoyY/2 < mappedJoyX){
-        digitalWrite(direction_pin_1, HIGH);
-        digitalWrite(direction_pin_2, HIGH);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyX - mappedJoyY/2);
-        analogWrite(controller_2, mappedJoyX + mappedJoyY/2);
-      }else if(receivedData.joyY < 400 && mappedJoyY/2 > mappedJoyX){
-        digitalWrite(direction_pin_1, LOW);
-        digitalWrite(direction_pin_2, HIGH);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, abs(mappedJoyX - mappedJoyY/2));
-        analogWrite(controller_2, mappedJoyX + mappedJoyY/2);
-      }else if(receivedData.joyY > 600 && mappedJoyY/2 < mappedJoyX){
-        digitalWrite(direction_pin_1, HIGH);
-        digitalWrite(direction_pin_2, HIGH);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyX + mappedJoyY/2);
-        analogWrite(controller_2, mappedJoyX - mappedJoyY/2);
-      }else if(receivedData.joyY > 600 && mappedJoyY/2 > mappedJoyX){
-        digitalWrite(direction_pin_1, HIGH);
-        digitalWrite(direction_pin_2, LOW);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyX + mappedJoyY/2);
-        analogWrite(controller_2, abs(mappedJoyX - mappedJoyY/2));
-      }else{
-        digitalWrite(direction_pin_1, HIGH);
-        digitalWrite(direction_pin_2, HIGH);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyX);
-        analogWrite(controller_2, mappedJoyX);        
-      }
-
-      //Serial.println("Less than 508");
-    }else if(receivedData.joyY > 600 || receivedData.joyY < 400){
-      int mappedJoyY;
-      if(receivedData.joyY > 510){
-        mappedJoyY = map(receivedData.joyY, 506, 1023, 0, 255);
-        digitalWrite(direction_pin_1, LOW);
-        digitalWrite(direction_pin_2, HIGH);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyY);
-        analogWrite(controller_2, mappedJoyY);
-      }else{
-        mappedJoyY = map(receivedData.joyY, 506, 0, 0, 255);
-        digitalWrite(direction_pin_1, HIGH);
-        digitalWrite(direction_pin_2, LOW);
-        digitalWrite(stop_pin_1, HIGH);
-        digitalWrite(stop_pin_2, HIGH);
-        analogWrite(controller_1, mappedJoyY);
-        analogWrite(controller_2, mappedJoyY);   
-      }   
+    if(receivedData.joyX >= 640){
+      int mappedJoyX = map(receivedData.joyX, 508, 1023, 0, 255);
+      digitalWrite(direction_pin, LOW);
+      digitalWrite(stop_pin, HIGH);
+      analogWrite(3, mappedJoyX);
+      Serial.println("Greater than 508");
+    }else if(receivedData.joyX <= 630){
+      int mappedJoyX = map(receivedData.joyX, 508, 0, 0, 255);
+      digitalWrite(direction_pin, HIGH);
+      digitalWrite(stop_pin, HIGH);
+      analogWrite(3, mappedJoyX);
+      Serial.println("Less than 508");
     }else{
-      digitalWrite(stop_pin_1, LOW);
-      digitalWrite(stop_pin_2, LOW);
+      digitalWrite(stop_pin, LOW);
     }
 
 

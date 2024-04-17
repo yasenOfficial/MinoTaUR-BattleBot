@@ -8,29 +8,35 @@ RF24 radio(7, 8); // CE, CSN
 
 const byte address[6] = "00001";
 
-const int joyXPin = A0;  // X-axis pin
-const int joyYPin = A1;  // Y-axis pin
-const int joySWPin = 2;  // Joystick switch pin
+const int joy1XPin = A0;  // X-axis pin
+const int joy1YPin = A1;  // Y-axis pin
+const int joy2XPin = A2;  // X-axis pin
+const int joy2YPin = A3;  // Y-axis pin
+const int rellayControllerPin = 3;
+const int rellayControllerPinMagnet = 2;
 
 LiquidCrystal_I2C lcd(0x27,  16, 2);
 
 void setup() {
- Serial.begin(9600);
+  pinMode(rellayControllerPin, INPUT_PULLUP);
+  pinMode(rellayControllerPinMagnet, INPUT_PULLUP);
+  Serial.begin(9600);
   radio.begin();
   radio.openReadingPipe(1, address);
   radio.setPALevel(RF24_PA_MIN);
   radio.startListening();
-  
-  pinMode(joySWPin, INPUT_PULLUP);
 
   lcd.init();
   lcd.backlight();
 }
 
 struct {
-  int joyX;
-  int joyY;
-  int joySW;
+  int joy1X;
+  int joy1Y;
+  int joy2X;
+  int joy2Y;
+  bool rellayController;
+  bool rellayControllerPinMagnet;
 }dataToSend;
 
 struct {
@@ -56,15 +62,19 @@ void loop() {
   }
 
   // Read analog values from X and Y axes
-  int joyXValue = analogRead(joyXPin);
-  int joyYValue = analogRead(joyYPin);
+  int joy1XValue = analogRead(joy1XPin);
+  int joy1YValue = analogRead(joy1YPin);
 
-  // Read the state of the joystick switch
-  int joySWState = digitalRead(joySWPin);
+  int joy2XValue = analogRead(joy2XPin);
+  int joy2YValue = analogRead(joy2YPin);
+  //Serial.println(joyXValue);
 
-  dataToSend.joyX = joyXValue;
-  dataToSend.joyY = joyYValue;
-  dataToSend.joySW = joySWState;
+  dataToSend.joy1X = joy1XValue;
+  dataToSend.joy1Y = joy1YValue;
+  dataToSend.joy2X = joy2XValue;
+  dataToSend.joy2Y = joy2YValue;
+  dataToSend.rellayController = !digitalRead(rellayControllerPin); 
+  dataToSend.rellayControllerPinMagnet = !digitalRead(rellayControllerPinMagnet); 
 
   delay(10);
 
